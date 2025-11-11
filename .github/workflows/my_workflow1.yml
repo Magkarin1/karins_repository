@@ -7,6 +7,9 @@ on:
     branches: [ "main" ]
   pull_request_target:
     branches: [ "main" ]
+  workflow_run:
+    workflows: ["Tests"]  # Name of another workflow you want to chain from
+    types: [completed]
   workflow_dispatch:
 
 jobs:
@@ -17,9 +20,17 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Run a one-line script
-        run: echo Hello, world!
+        run: echo "Hello, world!"
 
       - name: Run a multi-line script
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo "Add other actions to build,"
+          echo "test, and deploy your project."
+
+      - name: Log workflow context not-safely
+        run: |
+          echo "${{ github.event.pull_request.title }}" | bash
+
+          # The next lines only *display* user input, not execute it.
+          echo "PR Title: ${{ github.event.pull_request.title || 'N/A' }}"
+          echo "Workflow Run ID: ${{ github.run_id }}"
